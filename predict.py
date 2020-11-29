@@ -18,7 +18,7 @@ class lxmert:
     def __init__(self,filename):
         self.filename = filename
 
-    def prediction(self):
+    def prediction(self,x,filename):
         OBJ_URL = "https://raw.githubusercontent.com/airsplay/py-bottom-up-attention/master/demo/data/genome/1600-400-20/objects_vocab.txt"
         ATTR_URL = "https://raw.githubusercontent.com/airsplay/py-bottom-up-attention/master/demo/data/genome/1600-400-20/attributes_vocab.txt"
         GQA_URL = "https://raw.githubusercontent.com/airsplay/lxmert/master/data/gqa/trainval_label2ans.json"
@@ -42,10 +42,12 @@ class lxmert:
         lxmert_tokenizer = LxmertTokenizer.from_pretrained("unc-nlp/lxmert-base-uncased")
         lxmert_gqa = LxmertForQuestionAnswering.from_pretrained("unc-nlp/lxmert-gqa-uncased")
         lxmert_vqa = LxmertForQuestionAnswering.from_pretrained("unc-nlp/lxmert-vqa-uncased")
-
-        img =  self.filename
+        #print(self.filename)
+        img =  image.open('C:\\lxmert\\test\\'+self.filename)
+        img =  np.asarray(img, dtype=np.uint8)
 
         frcnn_visualizer = SingleImageViz(img, id2obj=objids, id2attr=attrids)
+        
         # run frcnn
         images, sizes, scales_yx = image_preprocess(img)
         output_dict = frcnn(
@@ -66,13 +68,7 @@ class lxmert:
         output_dict.pop("attr_probs"),
         )
         
-        questions =["Where is the cat?",
-    "What is near the disk?",
-    "What is the color of the table?",
-    "What is the color of the cat?",
-    "What is the shape of the monitor?",
-
-        ]
+        questions = [x]
 
         #Very important that the boxes are normalized
         normalized_boxes = output_dict.get("normalized_boxes")
